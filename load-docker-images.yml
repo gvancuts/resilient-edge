@@ -1,10 +1,10 @@
 ---
 - hosts: localhost
   tasks:
-#    - name: Create directory for local repository
-#      shell: "sudo mkdir -p /var/lib/registry"
-#    - name: Tell Docker to setup local registry
-#      shell: "sudo docker run -d -p 5000:5000 --restart=always --name registry -v /var/lib/registry:/var/lib/registry registry:2"
+    - name: Create directory for local repository
+      shell: "sudo mkdir -p /var/lib/registry"
+    - name: Tell Docker to setup local registry
+      shell: "sudo docker run -d -p 5000:5000 --restart=always --name registry -v /var/lib/registry:/var/lib/registry registry:2"
     - name: admin-portal
       docker_image:
         name: smarthome2cloud/admin-portal

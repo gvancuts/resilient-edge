@@ -3,10 +3,10 @@
 - hosts: localhost
   gather_facts: false
   tasks: 
-#    - name: Clone Demo Project
-#      shell: "git clone https://github.com/ichbinblau/SmartHome-Demo.git /home/demouser/SmartHome-Demo"
-#    - name: Checkout Kubernetes Branch
-#      shell: "cd /home/demouser/SmartHome-Demo && git checkout k8s"
+    - name: Clone Demo Project
+      shell: "git clone https://github.com/ichbinblau/SmartHome-Demo.git /home/demouser/SmartHome-Demo"
+    - name: Checkout Kubernetes Branch
+      shell: "cd /home/demouser/SmartHome-Demo && git checkout k8s"
     - name: Create K8 namespace for demo
       shell: "kubectl create ns iot2cloud"
     - name: Assign labels to nodes
@@ -16,7 +16,7 @@
         - { node: 'loadbalancer', label: 'nuc' }
         - { node: 'gw1', label: 'minnowboard' }
         - { node: 'gw2', label: 'minnowboard' }
-#        - { node: 'gw3', label: 'minnowboard' }
+        - { node: 'gw3', label: 'minnowboard' }
     - name: Create a database secret password
       shell: "echo -n  'intel123' > /home/demouser/mysql-root-pass.secret"
     - name: Create database password 
