@@ -1,0 +1,21 @@
+[all:vars]
+api_advertise_iface=eno1
+management_iface=eno1
+
+[kube-masters]
+192.168.2.117 ansible_connection=local
+
+[kube-workers]
+192.168.2.124
+192.168.2.126
+
+[k8s-cluster:children]
+kube-workers
+kube-masters
+
+[k8s-cluster:vars]
+ansible_user=demouser
+#ansible_become=true
+ansible_python_interpreter=/usr/bin/python
+ansible_ssh_private_key_file=/home/demouser/.ssh/id_rsa
+#ansible_sudo_pass=Intel123!

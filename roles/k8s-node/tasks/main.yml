@@ -5,9 +5,10 @@
 
 - include: ../k8s-all/tasks/advertise-ip.yml
 
+- debug: msg=" {{ token }} {{ api_advertise_ip }} "
+
 - name: join nodes
   become: True
-  become_user: "{{ username }}"
-  command: sudo kubeadm join --token {{ token }} {{ api_advertise_ip }}:6443
+  command: kubeadm join --token {{ token }} {{ api_advertise_ip }}:6443
   when: "'kube-workers' in group_names"
 

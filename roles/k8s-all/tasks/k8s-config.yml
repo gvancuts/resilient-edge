@@ -1,6 +1,8 @@
 ---
 
 # Configuration
+- name: setup
+  setup:
 
 - name: Enable and start docker
   systemd: name=docker state=started enabled=yes
@@ -49,6 +51,8 @@
 - name: Enable and start kubelet
   become: True
   systemd: name=kubelet state=started enabled=yes
+
+- debug: msg="{{ management_iface }}" 
 
 - name: Get advertise IP
   set_fact:

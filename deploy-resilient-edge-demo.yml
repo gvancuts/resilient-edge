@@ -1,0 +1,54 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  tasks: 
+#    - name: Clone Demo Project
+#      shell: "git clone https://github.com/ichbinblau/SmartHome-Demo.git /home/demouser/SmartHome-Demo"
+#    - name: Checkout Kubernetes Branch
+#      shell: "cd /home/demouser/SmartHome-Demo && git checkout k8s"
+    - name: Create K8 namespace for demo
+      shell: "kubectl create ns iot2cloud"
+    - name: Assign labels to nodes
+      command: "kubectl label nodes {{ item.node }} platform={{ item.label }} -n iot2cloud"
+      ignore_errors: True 
+      with_items:
+        - { node: 'loadbalancer', label: 'nuc' }
+        - { node: 'gw1', label: 'minnowboard' }
+        - { node: 'gw2', label: 'minnowboard' }
+#        - { node: 'gw3', label: 'minnowboard' }
+    - name: Create a database secret password
+      shell: "echo -n  'intel123' > /home/demouser/mysql-root-pass.secret"
+    - name: Create database password 
+      shell: "kubectl -n iot2cloud create secret generic mysql-root-pass --from-file=/home/demouser/mysql-root-pass.secret"
+    - name: Create database pod
+      shell: "kubectl -n iot2cloud create -f /home/demouser/SmartHome-Demo/smarthome-web-portal/tools/yamls/{{ item }}"
+      with_items: 
+        - 'mariadb-master-service.yaml'
+        - 'mariadb-master.yaml'
+        - 'mariadb-slave-service.yaml'
+        - 'mariadb-slave.yaml'
+    - name: Set up RabbitMQ
+      command: "kubectl -n iot2cloud create -f /home/demouser/SmartHome-Demo/smarthome-web-portal/tools/yamls/{{ item }}"
+      with_items:
+        - 'rabbitmq-service.yaml'
+        - 'rabbitmq.yaml'
+    - name: Create IoT Rest API Service and Gateway Server
+      command: "kubectl -n iot2cloud create -f /home/demouser/SmartHome-Demo/smarthome-web-portal/tools/yamls/{{ item }}"
+      with_items:
+        - 'smarthome-gateway-service.yaml'
+        - 'smarthome-gateway.yaml'
+    - name: Setup Home Dashboard 
+      command: "kubectl -n iot2cloud create -f /home/demouser/SmartHome-Demo/smarthome-web-portal/tools/yamls/{{ item }}"
+      with_items:
+        - 'home-portal-service.yaml'
+        - 'home-portal.yaml'
+    - name: Setup Admin Portal
+      command: "kubectl -n iot2cloud create -f /home/demouser/SmartHome-Demo/smarthome-web-portal/tools/yamls/{{ item }}"
+      with_items:
+        - 'admin-portal-service.yaml'
+        - 'admin-portal.yaml'
+    - name: Setup Celery Worker
+      command: "kubectl -n iot2cloud create -f /home/demouser/SmartHome-Demo/smarthome-web-portal/tools/yamls/{{ item }}"
+      with_items:
+        - 'celery-worker.yaml'

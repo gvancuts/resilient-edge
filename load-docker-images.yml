@@ -1,0 +1,64 @@
+---
+- hosts: localhost
+  tasks:
+#    - name: Create directory for local repository
+#      shell: "sudo mkdir -p /var/lib/registry"
+#    - name: Tell Docker to setup local registry
+#      shell: "sudo docker run -d -p 5000:5000 --restart=always --name registry -v /var/lib/registry:/var/lib/registry registry:2"
+    - name: admin-portal
+      docker_image:
+        name: smarthome2cloud/admin-portal
+    - name: Tag and push to local registry
+      docker_image:
+        name: smarthome2cloud/admin-portal
+        repository: 192.168.2.117:5000/admin-portal
+        push: yes
+
+    - name: celery-worker 
+      docker_image:
+        name: smarthome2cloud/celery-worker
+    - name: Tag and push to local registry
+      docker_image:
+        name: smarthome2cloud/celery-worker
+        repository: 192.168.2.117:5000/celery-worker
+        push: yes
+
+    - name: home-portal
+      docker_image:
+        name: smarthome2cloud/home-portal
+    - name: Tag and push to local registry
+      docker_image:
+        name: smarthome2cloud/home-portal
+        repository: 192.168.2.117:5000/home-portal
+        push: yes
+
+    - name: mariadb-master
+      docker_image:
+        name: smarthome2cloud/mariadb-master
+    - name: Tag and push to local registry
+      docker_image:
+        name: smarthome2cloud/mariadb-master
+        repository: 192.168.2.117:5000/mariadb-master
+        push: yes
+
+
+    - name: rabbitmq
+      docker_image:
+        name: smarthome2cloud/rabbitmq
+    - name: Tag and push to local registry
+      docker_image:
+        name: smarthome2cloud/rabbitmq
+        repository: 192.168.2.117:5000/rabbitmq
+        push: yes
+
+
+    - name: smarthome-gateway
+      docker_image:
+        name: smarthome2cloud/smarthome-gateway
+    - name: Tag and push to local registry
+      docker_image:
+        name: smarthome2cloud/smarthome-gateway
+        repository: 192.168.2.117:5000/smarthome-gateway
+        push: yes
+
+
