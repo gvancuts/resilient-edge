@@ -5,10 +5,24 @@
 
 - include: ../k8s-all/tasks/advertise-ip.yml
 
-- debug: msg=" {{ token }} {{ api_advertise_ip }} "
-
 - name: join nodes
   become: True
-  command: kubeadm join --token {{ token }} {{ api_advertise_ip }}:6443
+  become_user: "{{ username }}"
+  command: sudo kubeadm join --token {{ token }} {{ api_advertise_ip }}:6443
   when: "'kube-workers' in group_names"
 
+- name: add master nodes ceph-deploy pubkey to authorized_keys
+  lineinfile:
+    dest: ~/.ssh/authorized_keys
+    state: present
+    line: "{{ hostvars[groups['kube-masters'][0]]['master_pubkey'] }}"
+    create: yes
+  become: True
+  become_user: ceph-deploy
+  when:
+      - dynamic_provision_enabled
+      - dynamic_provisioner == 'ceph'
+
+#  shell: cp -a ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
+#  become: True
+#  become_user: ceph-deploy

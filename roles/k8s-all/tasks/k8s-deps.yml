@@ -2,9 +2,6 @@
 
 # Deps
 
-- debug: 
-    msg: "{{ ansible_os_family }}"
-
 ## Ubuntu
 - name: Install ca certs [Debian]
   package: name={{item}} state=latest

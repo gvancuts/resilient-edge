@@ -1,8 +1,6 @@
 ---
 
 # Configuration
-- name: setup
-  setup:
 
 - name: Enable and start docker
   systemd: name=docker state=started enabled=yes
@@ -21,24 +19,40 @@
   when:
       - ansible_os_family == 'Debian'
 
-- name: Set CGROUP_DRIVER [Debian]
-  lineinfile:
+#- name: Set CGROUP_DRIVER [Debian]
+#  lineinfile:
+#    dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+#    regexp: '^(.*)KUBELET_KUBECONFIG_ARGS=(.*)$'
+#    line: '\1KUBELET_KUBECONFIG_ARGS=--cgroup-driver={{ cgroup_driver.stdout }} \2'
+#    backup: yes
+#    backrefs: yes
+#  become: True
+#  when:
+#    - ansible_os_family == 'Debian'
+#
+## DNS
+#- name: Replace DNS IP
+#  replace:
+#    dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+#    regexp: '10.96.0.10'
+#    replace: "{{ kube_dns_ip }}"
+#  become: True
+- name: Template 10-kubeadm.conf.tpl to /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+  template:
+    src: 10-kubeadm.conf.tpl
     dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-    regexp: '^(.*)KUBELET_KUBECONFIG_ARGS=(.*)$'
-    line: '\1KUBELET_KUBECONFIG_ARGS=--cgroup-driver={{ cgroup_driver.stdout }} \2'
-    backup: yes
-    backrefs: yes
+    mode: 0640
+  become: True
+
+- name: Template cloud-config.tpl to /etc/kubernetes/cloud-config
+  template:
+    src: cloud-config.tpl
+    dest: "{{ cloud_config }}"
+    mode: 0640
   become: True
   when:
-    - ansible_os_family == 'Debian'
-
-# DNS
-- name: Replace DNS IP
-  replace:
-    dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-    regexp: '10.96.0.10'
-    replace: "{{ kube_dns_ip }}"
-  become: True
+      - dynamic_provision_enabled
+      - dynamic_provisioner == 'openstack-cinder'
 
 - name: reload systemd
   become: True
@@ -51,8 +65,6 @@
 - name: Enable and start kubelet
   become: True
   systemd: name=kubelet state=started enabled=yes
-
-- debug: msg="{{ management_iface }}" 
 
 - name: Get advertise IP
   set_fact:

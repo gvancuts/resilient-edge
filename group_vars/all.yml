@@ -4,31 +4,72 @@
 ## the default for become_user operations (typically ubuntu on ubuntu)
 username: "{{ ansible_user }}"
 ## Taint master- and label master as kolla-worker
-master_works: False
+master_works: True
 
 # kube
 token: c2d386.f79b2b89b6138441
-pod_cidr: 10.1.0.0/16
+pod_cidr: 10.1.0.0/16 # 10.1.0.0/16, or 10.244.0.0/16 for Canal,
 service_cidr: 10.3.3.0/24
 ## typically change this to eth0 equivalent
 # ubuntu
 #   terraform = ens3
 #   vagrant = enp0s8
-api_advertise_iface: eno1
+pi_advertise_iface: eno1
 ## node .10 of service_cidr (10.3.3.10)
 kube_dns_ip: 10.3.3.10
 ## typically change this to your master's eth0 ip
 #api_advertise_ip: 10.0.0.5
-kube_version: 1.7.5
+
+## NOTE: 1.8.0 currently NOT working.
+
+## version of k8s dependencies from repo (kubectl, kubeadm, kubelet)
+kube_version: 1.7.5 # exactly 1.7.5 or 1.8.0
+## version of Kubernetes to install with Kubeadm (should match y version from kube_version)
+kubernetes_version: 1.7.7 # >= 1.7.5 or >= 1.8.0
 
 # network
+## NOTE: Canal isn't fully functional within this cluster setup and issues have been reported.
+## Use Weave unless you are working on resolving Canal issues.
 network_driver: 'weave'  # canal or weave
 ## canal
 canal_dns_ip: 10.3.3.100
-canal_pod_network: 10.1.0.0
+canal_pod_network: 10.244.0.0 # canal requires 10.244.0.0
 
-# helm (specify x.y.z or 'latest')
-helm_version: "2.6.1"
+# cloud provider
+cloud_provider: False # openstack or False
+cloud_config: /etc/kubernetes/cloud-config
+## openstack provider
+## Requires environment variables
+openstack_auth_url: "{{ lookup('env','OS_AUTH_URL') }}"
+openstack_tenant_id: "{{ lookup('env','OS_TENANT_ID') }}"
+openstack_tenant_name: "{{ lookup('env','OS_TENANT_NAME') }}"
+openstack_username: "{{ lookup('env','OS_USERNAME') }}"
+openstack_password: "{{ lookup('env','OS_PASSWORD') }}"
+openstack_region: "{{ lookup('env','OS_REGION_NAME') }}"
+openstack_domain_name: "{{ lookup('env','OS_DOMAIN_NAME') }}"
+
+# storage
+dynamic_provision_enabled: False
+#dynamic_provisioner: openstack-cinder # requires cloud_provider: openstack
+dynamic_provisioner: ceph
+
+# extra kubelet args
+## args for dynamic provisioning - cinder
+#kubelet_args: " --cloud-provider={{ cloud_provider }} --cloud-config={{ cloud_config }}"
+## args for no dynamic provisioning
+kubelet_args: ""
+
+# add-ons
+## helm (specify x.y.z or 'latest')
+helm_enabled: True
+helm_version: "2.7.0"
+## registry
+registry_enabled: False
+registry_pvc_size: 20Gi
+## prometheus
+prometheus_enabled: False
+## kubectl helpers (alias, env)
+helpers_enabled: True
 
 # kolla
 base_distro: "centos"
