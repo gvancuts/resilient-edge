@@ -10,7 +10,7 @@
     - name: Create K8 namespace for demo
       shell: "kubectl create ns iot2cloud"
     - name: Assign labels to nodes
-      command: "kubectl label nodes {{ item.node }} platform={{ item.label }} -n iot2cloud"
+      command: "kubectl label --overwrite nodes {{ item.node }} platform={{ item.label }} -n iot2cloud"
       ignore_errors: True 
       with_items:
         - { node: 'loadbalancer', label: 'nuc' }

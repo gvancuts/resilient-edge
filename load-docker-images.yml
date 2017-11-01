@@ -5,6 +5,8 @@
       shell: "sudo mkdir -p /var/lib/registry"
     - name: Tell Docker to setup local registry
       shell: "sudo docker run -d -p 5000:5000 --restart=always --name registry -v /var/lib/registry:/var/lib/registry registry:2"
+    - name: Restart docker after setting up local registry
+      shell: "sudo service docker restart" 
     - name: admin-portal
       docker_image:
         name: smarthome2cloud/admin-portal
@@ -12,7 +14,6 @@
       docker_image:
         name: smarthome2cloud/admin-portal
         repository: 192.168.2.117:5000/admin-portal
-        become: True
         push: yes
 
     - name: celery-worker 
@@ -22,7 +23,6 @@
       docker_image:
         name: smarthome2cloud/celery-worker
         repository: 192.168.2.117:5000/celery-worker
-        become: True
         push: yes
 
     - name: home-portal
@@ -32,7 +32,6 @@
       docker_image:
         name: smarthome2cloud/home-portal
         repository: 192.168.2.117:5000/home-portal
-        become: True
         push: yes
 
     - name: mariadb-master
@@ -42,7 +41,6 @@
       docker_image:
         name: smarthome2cloud/mariadb-master
         repository: 192.168.2.117:5000/mariadb-master
-        become: True
         push: yes
 
     - name: rabbitmq
@@ -52,7 +50,6 @@
       docker_image:
         name: smarthome2cloud/rabbitmq
         repository: 192.168.2.117:5000/rabbitmq
-        become: True
         push: yes
 
     - name: smarthome-gateway
@@ -62,5 +59,4 @@
       docker_image:
         name: smarthome2cloud/smarthome-gateway
         repository: 192.168.2.117:5000/smarthome-gateway
-        become: True
         push: yes
