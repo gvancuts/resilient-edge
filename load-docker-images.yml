@@ -10,53 +10,65 @@
     - name: admin-portal
       docker_image:
         name: smarthome2cloud/admin-portal
+      become: True
     - name: Tag and push to local registry
       docker_image:
         name: smarthome2cloud/admin-portal
         repository: 192.168.2.117:5000/admin-portal
         push: yes
+      become: True
 
-    - name: celery-worker 
+    - name: celery-worker
       docker_image:
         name: smarthome2cloud/celery-worker
+      become: True
     - name: Tag and push to local registry
       docker_image:
         name: smarthome2cloud/celery-worker
         repository: 192.168.2.117:5000/celery-worker
         push: yes
+      become: True
 
     - name: home-portal
       docker_image:
         name: smarthome2cloud/home-portal
+      become: True
     - name: Tag and push to local registry
       docker_image:
         name: smarthome2cloud/home-portal
         repository: 192.168.2.117:5000/home-portal
         push: yes
+      become: True
 
     - name: mariadb-master
       docker_image:
         name: smarthome2cloud/mariadb-master
+      become: True
     - name: Tag and push to local registry
       docker_image:
         name: smarthome2cloud/mariadb-master
         repository: 192.168.2.117:5000/mariadb-master
         push: yes
+      become: True
 
     - name: rabbitmq
       docker_image:
         name: smarthome2cloud/rabbitmq
+      become: True
     - name: Tag and push to local registry
       docker_image:
         name: smarthome2cloud/rabbitmq
         repository: 192.168.2.117:5000/rabbitmq
         push: yes
+      become: True
 
     - name: smarthome-gateway
       docker_image:
         name: smarthome2cloud/smarthome-gateway
+      become: True
     - name: Tag and push to local registry
       docker_image:
         name: smarthome2cloud/smarthome-gateway
         repository: 192.168.2.117:5000/smarthome-gateway
         push: yes
+      become: True
